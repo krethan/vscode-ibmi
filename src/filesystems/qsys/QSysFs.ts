@@ -36,7 +36,7 @@ export function parseFSOptions(uri: vscode.Uri): QsysFsOptions {
     const parameters = parse(uri.query);
     return {
         readonly: parameters.readonly === `true`,
-        libraries: parameters.libraries as string | undefined
+        libraries: typeof parameters.libraries === `string` ? parameters.libraries : undefined
     };
 }
 
