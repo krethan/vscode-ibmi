@@ -225,7 +225,15 @@ export class QSysFS implements vscode.FileSystemProvider {
             let { asp, library, file, name: member, extension } = await this.parseMemberPath(connection, uri.path);
             asp = asp || await connection.getLibraryIAsp(library);
 
-            if (!content.length) { //Coming from "Save as"
+            const exists = !!await this.getMemberAttributes(connection, { asp, library, file, member });
+            if (!exists && !options.create) {
+                throw FileSystemError.FileNotFound(uri);
+            }
+            if (exists && !options.overwrite) {
+                throw FileSystemError.FileExists(uri);
+            }
+
+            if (!exists && !content.length) { //Coming from "Save as"
                 const isCreated = await this.createMember(connection, uri, library, file, member, extension);
                 if (isCreated) {
                     return;
