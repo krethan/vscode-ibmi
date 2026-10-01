@@ -117,7 +117,7 @@ export class IFSFS implements vscode.FileSystemProvider {
         throw FileSystemError.FileExists(uri);
       }
       else {
-        const result = await connection.sendCommand({ command: `mkdir -p ${path}` });
+        const result = await connection.sendCommand({ command: `mkdir -p ${Tools.escapePath(path)}` });
         if (result.code !== 0) {
           throw FileSystemError.NoPermissions(result.stderr);
         }
