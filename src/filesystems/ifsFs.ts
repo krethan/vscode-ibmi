@@ -29,7 +29,7 @@ export class IFSFS implements vscode.FileSystemProvider {
           return this.readFile(uri, true);
         }
         else {
-          return Buffer.alloc(0);
+          throw new FileSystemError("Not connected to IBM i");
         }
       }
     }
