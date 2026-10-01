@@ -50,13 +50,13 @@ export namespace SearchTools {
         // pfgrep vs. qshell grep difference: uses -r for recursion instead of -R
         // (GNU/BSD grep treat them the same); we don't use recursion yet though...
         // older versions before 0.4 need -t to trim whitespace, 0.4 inverts the flag
-        const command = `${pfgrep} -inHr -F "${sanitizeSearchTerm(searchTerm)}" ${memberFilter}`;
+        const command = `${pfgrep} -inHr -F '${escapeSingleQuotedShellArg(searchTerm)}' ${memberFilter}`;
         result = await connection.sendCommand({
           command: command,
           directory: connection.sysNameInAmerican(`${asp ? `/${asp}` : ``}/QSYS.LIB/${library}.LIB/${sourceFile}.FILE`)
         });
       } else {
-        const command = `/usr/bin/grep -inHR -F "${sanitizeSearchTerm(searchTerm)}" ${memberFilter}`;
+        const command = `/usr/bin/grep -inHR -F '${escapeSingleQuotedShellArg(searchTerm)}' ${memberFilter}`;
         result = await connection.sendQsh({
           command: command,
           directory: connection.sysNameInAmerican(`${asp ? `/${asp}` : ``}/QSYS.LIB/${library}.LIB/${sourceFile}.FILE`)
@@ -209,8 +209,9 @@ export namespace SearchTools {
     return results;
   }
 
-  function sanitizeSearchTerm(searchTerm: string): string {
-    return searchTerm.replace(/\\/g, `\\\\`).replace(/"/g, `\\"`);
+  function escapeSingleQuotedShellArg(value: string): string {
+    return value.replace(/'/g, `'\\''`);
+  }
   }
 
   function nthIndex(aString: string, pattern: string, n: number) {
