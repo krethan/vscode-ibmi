@@ -292,7 +292,7 @@ export class QSysFS implements vscode.FileSystemProvider {
                     }
 
                     if (libraries.length > 0) {
-                        statement += ` where OBJNAME in (${libraries.map(entry => `'${connection.upperCaseName(entry)}'`).join(`, `)})`;
+                        statement += ` where OBJNAME in (${libraries.map(entry => `'${connection.upperCaseName(entry).replace(/'/g, `''`)}'`).join(`, `)})`;
                     }
                 }
 
