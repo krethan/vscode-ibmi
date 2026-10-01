@@ -147,11 +147,11 @@ export namespace SearchTools {
         let ignoreString = ``;
 
         if (dirsToIgnore.length > 0) {
-          ignoreString = dirsToIgnore.map(dir => `-type d -path '*/${dir}' -prune -o`).join(` `);
+          ignoreString = dirsToIgnore.map(dir => `-type d -path '*/${escapeSingleQuotedShellArg(dir)}' -prune -o`).join(` `);
         }
 
         const findRes = await connection.sendCommand({
-          command: `${find} ${Tools.escapePath(path)} ${ignoreString} -type f -iname '*${findTerm}*' -print`
+          command: `${find} ${Tools.escapePath(path)} ${ignoreString} -type f -iname '*${escapeSingleQuotedShellArg(findTerm)}*' -print`
         });
 
         if (findRes.stdout) {
@@ -168,6 +168,10 @@ export namespace SearchTools {
     else {
       throw new Error("Please connect to an IBM i");
     }
+  }
+
+  function escapeSingleQuotedShellArg(value: string): string {
+    return value.replace(/'/g, `'\\''`);
   }
 
   function parseFindOutput(output: string, readonly?: boolean, pathTransformer?: (path: string) => string): SearchHit[] {
