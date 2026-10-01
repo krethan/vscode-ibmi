@@ -75,7 +75,15 @@ export class IFSFS implements vscode.FileSystemProvider {
         throw new FileSystemError("Connection is in readonly mode");
       }
       const contentApi = connection.getContent();
-      if (!content.length) { //Coming from "Save as"    
+      const exists = await contentApi.testStreamFile(path, "e");
+      if (!exists && !options.create) {
+        throw FileSystemError.FileNotFound(uri);
+      }
+      if (exists && !options.overwrite) {
+        throw FileSystemError.FileExists(uri);
+      }
+
+      if (!exists) {
         this.savedAsFiles.add(path);
         await contentApi.createStreamFile(path);
         vscode.commands.executeCommand(`code-for-ibmi.refreshIFSBrowser`);
