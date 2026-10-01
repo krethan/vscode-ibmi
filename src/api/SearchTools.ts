@@ -173,6 +173,7 @@ export namespace SearchTools {
   function parseFindOutput(output: string, readonly?: boolean, pathTransformer?: (path: string) => string): SearchHit[] {
     const results: SearchHit[] = [];
     for (const line of output.split('\n')) {
+      if (!line) continue;
       const path = pathTransformer?.(line) || line;
       results.push(results.find(r => r.path === path) || { path, readonly, lines: [] });
     }
